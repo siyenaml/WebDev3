@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hangman Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            color: #002366;
+            /* dark blue text */
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        h1 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .hangman {
+            position: relative;
+            width: 120px;
+            height: 220px;
+            margin: 0 auto 1.5rem auto;
+            border-left: 5px solid #002366;
+            border-top: 5px solid #002366;
+        }
+        
+        .gallows {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 40px;
+            border-right: 5px solid #002366;
+        }
+        
+        .rope {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 20px;
+            border-right: 2px solid #002366;
+        }
+        
+        .part {
+            position: absolute;
+            display: none;
+            background: #002366;
+        }
+        
+        #part0 {
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #002366;
+        }
+        
+        #part1 {
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 50px;
+            background: #002366;
+        }
+        
+        #part2 {
+            top: 100px;
+            left: calc(50% - 26px);
+            width: 25px;
+            height: 6px;
+            background: #002366;
+            transform-origin: right;
+            transform: rotate(30deg);
+        }
+        
+        #part3 {
+            top: 100px;
+            left: 50%;
+            width: 25px;
+            height: 6px;
+            background: #002366;
+            transform-origin: left;
+            transform: rotate(-30deg);
+        }
+        
+        #part4 {
+            top: 140px;
+            left: calc(50% - 10px);
+            width: 6px;
+            height: 35px;
+            background: #002366;
+            transform: rotate(10deg);
+            transform-origin: top;
+        }
+        
+        #part5 {
+            top: 140px;
+            left: calc(50% + 4px);
+            width: 6px;
+            height: 35px;
+            background: #002366;
+            transform: rotate(-10deg);
+            transform-origin: top;
+        }
+        
+        .word {
+            font-size: 2rem;
+            margin: 1rem 0 2rem 0;
+            letter-spacing: 1.5rem;
+            user-select: none;
+        }
+        
+        .word .letter {
+            border-bottom: 3px solid #002366;
+            display: inline-block;
+            width: 1.5rem;
+            text-transform: uppercase;
+            vertical-align: bottom;
+            padding-bottom: 0.2rem;
+            margin: 0 0.1rem;
+            font-weight: 600;
+        }
+        
+        .alphabet {
+            margin-bottom: 1.5rem;
+        }
+        
+        .alphabet button {
+            padding: 0.5rem 0;
+            margin: 0.2rem 0.15rem;
+            font-size: 1.1rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(145deg, #004080, #003366);
+            border: 2px solid #002366;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease;
+            user-select: none;
+        }
+        
+        .alphabet button:hover:not(:disabled) {
+            background: linear-gradient(145deg, #0059b3, #004080);
+            color: #cce0ff;
+        }
+        
+        .alphabet button:disabled {
+            background: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            border-color: #999;
+        }
+        
+        button#newGame {
+            background: #002366;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: background 0.3s ease;
+        }
+        
+        button#newGame:hover {
+            background: #003399;
+        }
+        
+        #winMessage,
+        #loseMessage {
+            font-size: 1.8rem;
+            margin-top: 1rem;
+            font-weight: 700;
+            user-select: none;
+        }
+        
+        #winMessage {
+            color: green;
+        }
+        
+        #loseMessage {
+            color: red;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #002366;
+            font-weight: 600;
+            text-decoration: none;
+            border: 2px solid #002366;
+            padding: 0.4rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
+            user-select: none;
+        }
+        
+        .back-link:hover {
+            background: #002366;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Hangman Game</h1>
+
+    <div class="hangman">
+        <div class="gallows"></div>
+        <div class="rope"></div>
+        <div id="part0" class="part"></div>
+        <!-- Head -->
+        <div id="part1" class="part"></div>
+        <!-- Body -->
+        <div id="part2" class="part"></div>
+        <!-- Left Arm -->
+        <div id="part3" class="part"></div>
+        <!-- Right Arm -->
+        <div id="part4" class="part"></div>
+        <!-- Left Leg -->
+        <div id="part5" class="part"></div>
+        <!-- Right Leg -->
+    </div>
+
+    <div class="word" id="wordDisplay"></div>
+
+    <div class="alphabet" id="alphabet"></div>
+
+    <button id="newGame" onclick="startGame()">New Game</button>
+
+    <div id="winMessage">Congratulations, you won!</div>
+    <div id="loseMessage">You're out of guesses, try again!</div>
+
+    <a class="back-link" href="scratch.html">Go Back to From Scratch Page</a>
+
+    <script>
+        const wordBank = ["apple", "grape", "mango", "pearl", "stone"];
+        let selectedWord = "";
+        let correctGuesses = [];
+        let wrongGuesses = 0;
+
+        function startGame() {
+            selectedWord = wordBank[Math.floor(Math.random() * wordBank.length)].toLowerCase();
+            correctGuesses = [];
+            wrongGuesses = 0;
+            document.getElementById("winMessage").style.display = "none";
+            document.getElementById("loseMessage").style.display = "none";
+
+            for (let i = 0; i < 6; i++) {
+                document.getElementById("part" + i).style.display = "none";
+            }
+
+            const wordDisplay = document.getElementById("wordDisplay");
+            wordDisplay.innerHTML = "";
+            for (let letter of selectedWord) {
+                wordDisplay.innerHTML += `<span class="letter">_</span>`;
+            }
+
+            const alphabet = document.getElementById("alphabet");
+            alphabet.innerHTML = "";
+            for (let i = 65; i <= 90; i++) {
+                const char = String.fromCharCode(i);
+                const btn = document.createElement("button");
+                btn.textContent = char;
+                btn.onclick = () => guessLetter(char.toLowerCase(), btn);
+                alphabet.appendChild(btn);
+            }
+        }
+
+        function guessLetter(letter, btn) {
+            btn.disabled = true;
+            if (selectedWord.includes(letter)) {
+                correctGuesses.push(letter);
+                updateWordDisplay();
+                checkWin();
+            } else {
+                if (wrongGuesses < 6) {
+                    document.getElementById("part" + wrongGuesses).style.display = "block";
+                    wrongGuesses++;
+                    if (wrongGuesses === 6) {
+                        document.getElementById("loseMessage").style.display = "block";
+                        disableAlphabet();
+                    }
+                }
+            }
+        }
+
+        function updateWordDisplay() {
+            const wordDisplay = document.getElementById("wordDisplay");
+            wordDisplay.innerHTML = "";
+            for (let letter of selectedWord) {
+                wordDisplay.innerHTML += `<span class="letter">${correctGuesses.includes(letter) ? letter.toUpperCase() : "_"}</span>`;
+            }
+        }
+
+        function checkWin() {
+            const won = selectedWord.split("").every(letter => correctGuesses.includes(letter));
+            if (won) {
+                document.getElementById("winMessage").style.display = "block";
+                disableAlphabet();
+            }
+        }
+
+        function disableAlphabet() {
+            const buttons = document.querySelectorAll(".alphabet button");
+            buttons.forEach(button => button.disabled = true);
+        }
+
+        startGame();
+    </script>
+</body>
+
+</html>
